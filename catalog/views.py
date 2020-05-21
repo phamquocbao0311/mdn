@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views import generic
 from catalog.models import Book, Author, BookInstance, Gerne
+from django.shortcuts import get_object_or_404, Http404
 
 
 def index(request):
@@ -40,3 +41,22 @@ class BookListView(generic.ListView):
 class BookDetailView(generic.DetailView):
     model = Book
     paginate_by = 10
+
+    def book_detail_view(request, primary_key):
+        book = get_object_or_404(Book, pk=primary_key)
+        print(type(book))
+        return render(request, 'catalog/book_detail.html', context={'book': book})
+
+class AuthorListView(generic.ListView):
+    model = Author
+
+    def get_queryset(self):
+        return Author.objects.all()
+
+class AuthorDetailView(generic.DetailView):
+    model = Author
+
+    def author_detail_view( request, primary_key):
+        author = get_object_or_404(Author, pk=primary_key)
+        books = Book.objects.filter(author_id=primary_key)
+        return render(request, 'catalog/author_detail.html', context={'author': author,'books': books})
