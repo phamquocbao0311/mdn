@@ -32,11 +32,13 @@ def index(request):
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
 
+
 class BookListView(generic.ListView):
     model = Book
 
     def get_queryset(self):
         return Book.objects.all()[:5]  # Get 5 books containing the title war
+
 
 class BookDetailView(generic.DetailView):
     model = Book
@@ -44,8 +46,8 @@ class BookDetailView(generic.DetailView):
 
     def book_detail_view(request, primary_key):
         book = get_object_or_404(Book, pk=primary_key)
-        print(type(book))
         return render(request, 'catalog/book_detail.html', context={'book': book})
+
 
 class AuthorListView(generic.ListView):
     model = Author
@@ -53,10 +55,15 @@ class AuthorListView(generic.ListView):
     def get_queryset(self):
         return Author.objects.all()
 
+
 class AuthorDetailView(generic.DetailView):
     model = Author
 
-    def author_detail_view( request, primary_key):
+    def author_detail_view(request, primary_key):
         author = get_object_or_404(Author, pk=primary_key)
-        books = Book.objects.filter(author_id=primary_key)
-        return render(request, 'catalog/author_detail.html', context={'author': author,'books': books})
+        return render(request, 'catalog/author_detail.html', context={'author': author})
+
+    def get_context_data(self, primary_key = 1, **kwargs):
+        context = super(AuthorDetailView, self).get_context_data(**kwargs)
+        context['books'] = Book.objects.filter(author_id=primary_key)
+        return context
