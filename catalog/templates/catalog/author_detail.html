@@ -6,8 +6,13 @@
 
  <div style="margin-left:20px;margin-top:20px">
      <h5>Books</h5>
-     {% for book in books %}
-        <p>{{ book.title }} dzvdb</p>
-     {% endfor %}
+     {% if books %}
+         {% for book in books %}
+            <p>{{ book.title }} dzvdb</p>
+         {% endfor %}
+
+     {% else %}
+        <p>khoong co book</p>
+     {% endif %}
  </div>
 {% endblock %}
