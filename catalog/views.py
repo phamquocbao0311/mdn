@@ -35,7 +35,8 @@ class BookListView(generic.ListView):
     model = Book
 
     def get_queryset(self):
-        return Book.objects.filter(title__icontains='Toan')[:5]  # Get 5 books containing the title war
+        return Book.objects.all()[:5]  # Get 5 books containing the title war
 
-class BookDetailView(generic.DeleteView):
+class BookDetailView(generic.DetailView):
     model = Book
+    paginate_by = 10
