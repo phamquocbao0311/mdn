@@ -42,7 +42,7 @@ class BookListView(generic.ListView):
     model = Book
 
     def get_queryset(self):
-        return Book.objects.all()[:5]  # Get 5 books containing the title war
+        return Book.objects.all() # Get 5 books containing the title war
 
 
 class BookDetailView(generic.DetailView):
@@ -83,3 +83,11 @@ class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
+
+
+class UserManageLoanedBookListView(LoginRequiredMixin, generic.ListView):
+    model = BookInstance
+    template_name = 'catalog/borrowed.html'
+
+    def get_queryset(self):
+        return BookInstance.objects.filter(borrower__isnull=False)
