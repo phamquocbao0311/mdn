@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views import generic
 from catalog.models import Book, Author, BookInstance, Gerne
 from django.shortcuts import get_object_or_404, Http404
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 def index(request):
@@ -20,13 +21,17 @@ def index(request):
     num_gerne = Gerne.objects.all().count()
     # num_gerne_available = Gerne.objects.filter(status__exact='a').count()
 
+    #session
+    num_visits = request.session.get('num_visits', 0)
+    request.session['num_visits'] = num_visits + 1
+
     context = {
         'num_books': num_books,
         'num_instances': num_instances,
         'num_instances_available': num_instances_available,
         'num_authors': num_authors,
         'num_genre': num_gerne,
-        # 'num_gerne_available': num_gerne_available,
+        'num_visits': num_visits,
     }
 
     # Render the HTML template index.html with the data in the context variable
@@ -57,13 +62,24 @@ class AuthorListView(generic.ListView):
 
 
 class AuthorDetailView(generic.DetailView):
+
     model = Author
 
     def author_detail_view(request, primary_key):
         author = get_object_or_404(Author, pk=primary_key)
         return render(request, 'catalog/author_detail.html', context={'author': author})
 
-    def get_context_data(self, primary_key = 1, **kwargs):
+    def get_context_data(self, **kwargs):
         context = super(AuthorDetailView, self).get_context_data(**kwargs)
-        context['books'] = Book.objects.filter(author_id=primary_key)
+        context['books'] = Book.objects.all()
         return context
+
+
+class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
+    """Generic class-based view listing books on loan to current user."""
+    model = BookInstance
+    template_name = 'catalog/bookinstance_list_borrowed_user.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')

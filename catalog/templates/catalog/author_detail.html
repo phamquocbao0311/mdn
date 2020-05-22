@@ -8,7 +8,9 @@
      <h5>Books</h5>
      {% if books %}
          {% for book in books %}
-            <p>{{ book.title }} dzvdb</p>
+            {% if book.author.id == author.id %}
+                <p><a href="{% url 'book-detail' book.id %}"> {{ book.title }}</a> </p>
+            {% endif %}
          {% endfor %}
 
      {% else %}
