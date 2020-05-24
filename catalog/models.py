@@ -4,6 +4,7 @@ import uuid # Required for unique book instances
 from django.contrib.auth.models import User
 from datetime import date
 
+
 # Create your models here.
 class Gerne(models.Model):
     """Model representing a book gerne"""
@@ -12,6 +13,7 @@ class Gerne(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return self.name
+
 
 class Book(models.Model):
     """Model representing a book (but not a specific copy of a book)."""
