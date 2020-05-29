@@ -16,10 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from django.contrib.flatpages import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('catalog/', include('catalog.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('', RedirectView.as_view(url='catalog/', permanent=True)),
+]
+
+urlpatterns += [
+    path('about-us/', views.flatpage, {'url': '/about-us/'}, name='about'),
+    path('license/', views.flatpage, {'url': '/license/'}, name='license'),
 ]

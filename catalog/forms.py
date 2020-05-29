@@ -6,6 +6,7 @@ import datetime
 
 from catalog.models import BookInstance
 
+
 class RenewBookModelForm(forms.ModelForm):
     class Meta:
         model = BookInstance
