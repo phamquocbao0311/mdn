@@ -1,5 +1,4 @@
 from django.views import generic
-from catalog.models import Book, Author, BookInstance, Gerne
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -7,10 +6,12 @@ from django.urls import reverse
 from django.contrib.auth.decorators import permission_required
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 import datetime
 
 from catalog.forms import RenewBookModelForm
+from catalog.models import Book, Author, BookInstance, Gerne
 
 
 class AuthorCreate(LoginRequiredMixin, CreateView):
@@ -79,6 +80,7 @@ def index(request):
 
 class BookListView(generic.ListView):
     model = Book
+    paginate_by = 1
 
     def get_queryset(self):
         return Book.objects.all() # Get 5 books containing the title war
@@ -86,16 +88,30 @@ class BookListView(generic.ListView):
 
 class BookDetailView(generic.DetailView):
     model = Book
-    paginate_by = 10
+    paginate_by = 1
 
     def book_detail_view(request, primary_key):
         book = get_object_or_404(Book, pk=primary_key)
         return render(request, 'catalog/book_detail.html', context={'book': book})
 
 
+def book_list_view(request):
+    object_list = Book.objects.all()
+    paginator = Paginator(object_list, 1)
+    page = request.GET.get('page')
+    try:
+        books = paginator.page(page)
+    except PageNotAnInteger:
+        books = paginator.page(1)
+    except EmptyPage:
+        books = paginator.page(paginator.num_pages)
+    return render(request, 'catalog/books-func.html', {'page': page,
+                                                       'books': books})
+
+
 class AuthorListView(generic.ListView):
     model = Author
-    paginate_by = 10
+    paginate_by = 1
 
     def get_queryset(self):
         return Author.objects.all()

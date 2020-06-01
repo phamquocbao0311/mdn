@@ -1,10 +1,9 @@
 {% extends "base_generic.html" %}
-
 {% block content %}
   <h1>Book List</h1>
-  {% if book_list %}
+  {% if books %}
   <ul>
-    {% for book in book_list %}
+    {% for book in books %}
       <li>
         <a href="{{ book.get_absolute_url }}">{{ book.title }}</a> ({{book.author}})
       </li>
@@ -13,5 +12,5 @@
   {% else %}
     <p>There are no books in the library.</p>
   {% endif %}
-{% include "pagination.html" with page=page_obj %}
+{% include "pagination.html" with page=books %}
 {% endblock %}
